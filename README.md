@@ -21,7 +21,7 @@ The releases are also available on [Maven Central Repository](https://central.so
 
 ```kotlin
 val document = YtCrudTable(
-    YPath.simple("//home/ibox/document"),
+    YPath.simple("//home/your_dir/document"),
     TableSchema.builder()
       .add(ColumnSchema("document_id", string()))
       .add(ColumnSchema("index", int32()))
