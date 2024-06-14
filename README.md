@@ -20,7 +20,8 @@ The releases are also available on [Maven Central Repository](https://central.so
 ### Create representation scheme of your database table
 
 ```kotlin
-YPath.simple("//home/ibox/document"),
+val document = YtCrudTable(
+    YPath.simple("//home/ibox/document"),
     TableSchema.builder()
       .add(ColumnSchema("document_id", string()))
       .add(ColumnSchema("index", int32()))
@@ -29,4 +30,5 @@ YPath.simple("//home/ibox/document"),
       .add(ColumnSchema("status", string()))
       .build(),
     NoYtMapper
+  )
 ```
