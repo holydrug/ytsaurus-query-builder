@@ -52,3 +52,42 @@ val ytQl = YTQLBuilder.from(document)
       .build()
       .query
 ```
+
+### YQL practical select
+
+```kotlin
+suspend fun findCodesByReceiptIds(
+    receiptIds: List<UUID>
+  ): List<CodeWithReceiptItemCodeJoin> = YTQLJoinBuilder.from(receiptYtSchema.receiptItemCode)
+    .select(
+      codeYtSchema.code[
+        "code",
+        "connected_code",
+        "utilisation_date",
+        "package_type",
+        "status",
+        "extended_status",
+        "parent_code",
+        "actual_package_composition",
+        "partial_quantity",
+        "product_group",
+        "category",
+        "last_event_business_datetime",
+        "seller_tin",
+        "owner_tin",
+        "withdrawal_reason",
+        "product_id"
+      ],
+      receiptYtSchema.receiptItemCode["code", "id", "receipt_id", "receipt_item_id"]
+    ).leftJoin(codeYtSchema.code).using("code")
+    .whereIn(receiptYtSchema.receiptItemCode["receipt_id"], receiptIds, string())
+    .build()
+    .let { select ->
+      client.tablet { tx ->
+        tx.selectRows(
+          select
+        ).asyncAwait()
+      }
+    }.yTreeRows
+    .map { JoinMapper.mapCodeWithReceiptItemCodeJoin(it) }
+```
