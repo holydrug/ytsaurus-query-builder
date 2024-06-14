@@ -50,7 +50,6 @@ val ytQl = YTQLBuilder.from(document)
       .orderBy("document_id" to OrderDirection.ASC)
       .limit(10)
       .build()
-      .query
 ```
 
 ### YQL practical selects (you need to inject CompoundClient like me or you already do it somehow)
