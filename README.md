@@ -179,7 +179,7 @@ suspend fun update(
 ### YT QL practical inserts
 
 ```kotlin
-private suspend fun tryInsert(
+suspend fun tryInsert(
   entities: List<DuplicationReceiptEntity>
 ): Boolean = entities.map { YtCrudTable(/* create ytcrud table */).insert(it) }
   .let { modifications ->
