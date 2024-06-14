@@ -1,0 +1,19 @@
+name: Java CI with Gradle
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Copy Gradle Properties
+        run: cp ~/creds/gradle.properties ~/.gradle/gradle.properties
+
+      - name: Add needed permissions
+        run: chmod +x gradlew
+
+      - name: Deploy with Gradle
+        run: ./gradlew :publishToSonatype
