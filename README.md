@@ -69,7 +69,6 @@ class ClientConfiguration {
 class Service(
   private val client: CompoundClient
 ) {
-
   suspend fun findAllFiltered(
     filter: ReceiptFilter,
     currentUserTin: String? = null
