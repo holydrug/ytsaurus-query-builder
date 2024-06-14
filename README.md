@@ -56,38 +56,31 @@ val ytQl = YTQLBuilder.from(document)
 ### YQL practical select
 
 ```kotlin
-suspend fun findCodesByReceiptIds(
-    receiptIds: List<UUID>
-  ): List<CodeWithReceiptItemCodeJoin> = YTQLJoinBuilder.from(receiptYtSchema.receiptItemCode)
-    .select(
-      codeYtSchema.code[
-        "code",
-        "connected_code",
-        "utilisation_date",
-        "package_type",
-        "status",
-        "extended_status",
-        "parent_code",
-        "actual_package_composition",
-        "partial_quantity",
-        "product_group",
-        "category",
-        "last_event_business_datetime",
-        "seller_tin",
-        "owner_tin",
-        "withdrawal_reason",
-        "product_id"
-      ],
-      receiptYtSchema.receiptItemCode["code", "id", "receipt_id", "receipt_item_id"]
-    ).leftJoin(codeYtSchema.code).using("code")
-    .whereIn(receiptYtSchema.receiptItemCode["receipt_id"], receiptIds, string())
+suspend fun findAllFiltered(
+    filter: ReceiptFilter,
+    currentUserTin: String? = null
+  ): List<ReceiptEntity> = YTQLBuilder.from(schema.receipt)
+    .selectAll()
+    .apply {
+      filter.sellerTin?.let { where("seller_tin", it) }
+      filter.status?.takeIf { it.isNotEmpty() }?.let { whereIn("status", it, string()) }
+      filter.operationType?.takeIf { it.isNotEmpty() }?.let { whereIn("operation_type", it, string()) }
+      filter.cursor?.let { whereLess("id", it, string()) }
+      filter.receiptDateFrom?.let { whereGreater("receipt_date", it, datetime()) }
+      filter.receiptDateTo?.let { whereLess("receipt_date", it, datetime()) }
+      filter.createdOnFrom?.let { whereGreater("created_on", it, timestamp()) }
+      filter.createdOnTo?.let { whereLess("created_on", it, timestamp()) }
+      filter.ids?.let { uuids -> whereIn("id", uuids, string()) }
+      filter.originalIds?.let { whereIn("original_id", it) }
+      currentUserTin?.let { whereOr("seller_tin" to it, "buyer_tin" to it) }
+    }.orderBy("created_on" to OrderDirection.DESC)
+    .limit(filter.limit)
     .build()
     .let { select ->
       client.tablet { tx ->
         tx.selectRows(
           select
         ).asyncAwait()
-      }
-    }.yTreeRows
-    .map { JoinMapper.mapCodeWithReceiptItemCodeJoin(it) }
+      }.yTreeRows
+    }.map { schema.receipt.mapper.fromYt(it) }
 ```
