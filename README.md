@@ -12,3 +12,5 @@ To get the latest release from Maven Central, simply add the following to your b
 ```
 implementation("io.github.holydrug:ytsaurus-query-builder:1.0.1")
 ```
+
+The releases are also available on [Maven Central Repository](https://central.sonatype.com/artifact/io.github.holydrug/ytsaurus-query-builder)!
