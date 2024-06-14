@@ -4,13 +4,13 @@
 ytsaurus-query-builder
 ====
 
-ytsaurus-query-builder is an internal DSL and source code generator, modelling the YQL language as a type safe Java API to help you write better YQL. 
+ytsaurus-query-builder is an internal DSL and source code generator, modelling the YT QL language as a type safe Java API to help you write better YT QL. 
 
 ## Quick Start
 To get the latest release from Maven Central, simply add the following to your build.gradle.kts:
 
 ```
-implementation("io.github.holydrug:ytsaurus-query-builder:1.0.2")
+implementation("io.github.holydrug:ytsaurus-query-builder:1.0.3")
 ```
 
 The releases are also available on [Maven Central Repository](https://central.sonatype.com/artifact/io.github.holydrug/ytsaurus-query-builder)!
