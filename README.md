@@ -53,10 +53,25 @@ val ytQl = YTQLBuilder.from(document)
       .query
 ```
 
-### YQL practical select
+### YQL practical selects (you need to inject CompoundClient like me or you already do it somehow)
 
 ```kotlin
-suspend fun findAllFiltered(
+import java.beans.BeanProperty
+
+@Configuration
+class ClientConfiguration {
+  @Bean
+  fun getClient(): CompoundClient {
+    return YtClientFactory.direct(YtClientProperties(/* connection properties to ytsaurus */))
+  }
+}
+
+@Bean
+class Service(
+  private val client: CompoundClient
+) {
+
+  suspend fun findAllFiltered(
     filter: ReceiptFilter,
     currentUserTin: String? = null
   ): List<ReceiptEntity> = YTQLBuilder.from(schema.receipt)
@@ -83,4 +98,56 @@ suspend fun findAllFiltered(
         ).asyncAwait()
       }.yTreeRows
     }.map { schema.receipt.mapper.fromYt(it) }
+
+  suspend fun findCodesByReceiptIds(
+    receiptIds: List<UUID>
+  ): List<CodeWithReceiptItemCodeJoin> = YTQLJoinBuilder.from(receiptYtSchema.receiptItemCode)
+    .select(
+      codeYtSchema.code[
+        "code",
+        "connected_code",
+        "utilisation_date",
+        "package_type",
+        "status",
+        "extended_status",
+        "parent_code",
+        "actual_package_composition",
+        "partial_quantity",
+        "product_group",
+        "category",
+        "last_event_business_datetime",
+        "seller_tin",
+        "owner_tin",
+        "withdrawal_reason",
+        "product_id"
+      ],
+      receiptYtSchema.receiptItemCode["code", "id", "receipt_id", "receipt_item_id"]
+    ).leftJoin(codeYtSchema.code).using("code")
+    .whereIn(receiptYtSchema.receiptItemCode["receipt_id"], receiptIds, string())
+    .build()
+    .let { select ->
+      client.tablet { tx ->
+        tx.selectRows(
+          select
+        ).asyncAwait()
+      }
+    }.yTreeRows
+    .map { JoinMapper.mapCodeWithReceiptItemCodeJoin(it) }
+
+  suspend fun countByStatus(vararg status: ReceiptStatus) = YTQLBuilder.from(schema.receipt)
+    .select(
+      count("status_count"),
+      column("status"),
+    ).groupBy("status")
+    .havingIn("status", status.map { it.toString() })
+    .build()
+    .let { select ->
+      client.tablet { tx ->
+        tx.selectRows(
+          select
+        ).asyncAwait()
+      }.yTreeRows
+    }.map { ViewMapper.mapStatusWithCountView(it) }
+}
+
 ```
