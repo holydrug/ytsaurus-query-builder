@@ -10,7 +10,7 @@ ytsaurus-query-builder is an internal DSL and source code generator, modelling t
 To get the latest release from Maven Central, simply add the following to your build.gradle.kts:
 
 ```
-implementation("io.github.holydrug:ytsaurus-query-builder:1.0.2")
+implementation("io.github.holydrug:ytsaurus-query-builder:1.0.3")
 ```
 
 The releases are also available on [Maven Central Repository](https://central.sonatype.com/artifact/io.github.holydrug/ytsaurus-query-builder)!
