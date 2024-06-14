@@ -33,7 +33,7 @@ val document = YtCrudTable(
   )
 ```
 
-### YQL select without join with all criterias
+### YT QL select without join with all criterias
 
 ```kotlin
 val ytQl = YTQLBuilder.from(document)
@@ -52,7 +52,7 @@ val ytQl = YTQLBuilder.from(document)
       .build()
 ```
 
-### YQL practical selects (you need to inject CompoundClient like me or you already do it somehow)
+### YT QL practical selects (you need to inject CompoundClient like me or you already do it somehow)
 
 ```kotlin
 import java.beans.BeanProperty
@@ -147,5 +147,47 @@ class Service(
       }.yTreeRows
     }.map { ViewMapper.mapStatusWithCountView(it) }
 }
-
 ```
+
+### YT QL practical updates
+
+```kotlin
+suspend fun update(
+    originalIdWithDuplicatedIds: Map<String, Set<UUID>>
+  ) = YTQLBuilder.from(schema.duplicationReceipt)
+    .selectAll()
+    .whereIn("original_id", originalIdWithDuplicatedIds.keys)
+    .build()
+    .let { select ->
+      client.tablet { tx ->
+        tx.selectRows(
+          select
+        ).asyncAwait()
+          .yTreeRows
+          .map { schema.duplicationReceipt.mapper.fromYt(it) }
+          .mapNotNull { v0 ->
+            originalIdWithDuplicatedIds[v0.originalId]
+              ?.let { duplicateRawReceiptIds ->
+                schema.duplicationReceipt.update(v0.copy(duplicateRawReceiptIds = duplicateRawReceiptIds))
+              }
+          }.map { tx.modifyRows(it) }
+          .forEach { it.join() }
+      }
+    }
+```
+
+### YT QL practical inserts
+
+```kotlin
+private suspend fun tryInsert(
+  entities: List<DuplicationReceiptEntity>
+): Boolean = entities.map { YtCrudTable(/* create ytcrud table */).insert(it) }
+  .let { modifications ->
+    client.tablet { tx ->
+      modifications.map { tx.modifyRows(it) }
+        .forEach { it.join() }
+      true
+    }
+  }
+```
+
