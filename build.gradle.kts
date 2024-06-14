@@ -26,7 +26,7 @@ object Meta {
   val COMPONENT_TYPE = "java" // "java" or "versionCatalog"
   val GROUP = "io.github.holydrug"
   val ARTIFACT_ID = "ytsaurus-query-builder"
-  val VERSION = "1.0.1"
+  val VERSION = "1.0.2"
   val PUBLISHING_TYPE = "AUTOMATIC" // USER_MANAGED or AUTOMATIC
   val SHA_ALGORITHMS = listOf("SHA-256", "SHA-512") // sha256 and sha512 are supported but not mandatory. Only sha1 is mandatory but it is supported by default.
   val DESC = "ytsaurus-query-builder is an internal DSL and source code generator, modelling the YQL language as a type safe Java API to help you write better YQL."
