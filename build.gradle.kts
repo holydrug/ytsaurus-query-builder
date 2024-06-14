@@ -23,7 +23,7 @@ dependencies {
 // PUBLISHING TO SONATYPE CONFIGURATION
 // ------------------------------------
 object Meta {
-  val COMPONENT_TYPE = "versionCatalog" // "java" or "versionCatalog"
+  val COMPONENT_TYPE = "java" // "java" or "versionCatalog"
   val GROUP = "io.github.holydrug"
   val ARTIFACT_ID = "ytsaurus-query-builder"
   val VERSION = "1.0.0"
