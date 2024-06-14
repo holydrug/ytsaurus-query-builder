@@ -1,7 +1,7 @@
 package io.github.holydrug.scheme
 
 import io.github.holydrug.mapper.YtMapper
-import io.github.holydrug.query.model.column.ColumnSelector
+import io.github.holydrug.query.model.selector.column.ColumnSelector
 import io.github.holydrug.scheme.attribute.TtlAttributes
 import tech.ytsaurus.core.cypress.YPath
 import tech.ytsaurus.core.tables.TableSchema
