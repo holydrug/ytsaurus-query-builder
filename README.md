@@ -14,3 +14,19 @@ implementation("io.github.holydrug:ytsaurus-query-builder:1.0.1")
 ```
 
 The releases are also available on [Maven Central Repository](https://central.sonatype.com/artifact/io.github.holydrug/ytsaurus-query-builder)!
+
+## Usage
+
+### Create representation scheme of your database table
+
+```kotlin
+YPath.simple("//home/ibox/document"),
+    TableSchema.builder()
+      .add(ColumnSchema("document_id", string()))
+      .add(ColumnSchema("index", int32()))
+      .add(ColumnSchema("property_name", string()))
+      .add(ColumnSchema("document_date", timestamp()))
+      .add(ColumnSchema("status", string()))
+      .build(),
+    NoYtMapper
+```
