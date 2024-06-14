@@ -32,3 +32,23 @@ val document = YtCrudTable(
     NoYtMapper
   )
 ```
+
+### If you need data without joins see example below
+
+```kotlin
+val ytQl = YTQLBuilder.from(document)
+      .selectAll()
+      .where("document_id", did)
+      .whereNot("index", 3)
+      .whereGreater("index", 11)
+      .whereLess("index", 15)
+      .whereGreater("document_date", date, timestamp())
+      .whereLess("document_date", date, timestamp())
+      .whereNot("property_name", "not")
+      .whereIn("property_name", listOf("pg", "pid", "rid"))
+      .whereIn("status", listOf(1, 2, 3))
+      .orderBy("document_id" to OrderDirection.ASC)
+      .limit(10)
+      .build()
+      .query
+```
