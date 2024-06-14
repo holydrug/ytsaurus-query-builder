@@ -33,7 +33,7 @@ val document = YtCrudTable(
   )
 ```
 
-### YQL WITHOUT JOIN EXAMPLE
+### YQL select without join
 
 ```kotlin
 val ytQl = YTQLBuilder.from(document)
